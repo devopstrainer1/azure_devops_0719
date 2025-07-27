@@ -1,0 +1,46 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# this yaml is to push image to acr and deploy container in container instance
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'amitazure'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # create acr
+        az acr create --resource-group 'test1' --name 'amittest0727' --location 'East US' --sku basic 
+        # enable admin user
+        az acr update -n 'amittest0727' --admin-enabled true
+        #login to acr
+        az acr login --name 'amittest0727'
+        # create docker image
+        docker build -t amittest0727.azurecr.io/testing:v1 .
+        docker push amittest0727.azurecr.io/testing:v1
+
+        # retrieve credentials for acr
+        username=$(az acr credential show --name 'amittest0727' --query username --output tsv)
+        password=$(az acr credential show --name 'amittest0727' --query "passwords[0].value" --output tsv)
+
+        # creating container instance
+        az container create --resource-group 'test1' \
+                            --name arjun \
+                            --image amittest0727.azurecr.io/testing:v1 \
+                            --ports 80 \
+                            --cpu 1 \
+                            --memory 1 \
+                            --os-type Linux \
+                            --dns-name-label amitedurekatest \
+                            --registry-login-server amittest0727.azurecr.io \
+                            --registry-username $username \
+                            --registry-password $password
+
+
