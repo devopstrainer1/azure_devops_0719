@@ -1,0 +1,95 @@
+kushagral@Kushagras-MacBook-Air kubernetes_0802 % cat a.yml 
+apiVersion: v1
+kind: Pod
+metadata:
+ name: edureka
+spec:
+ containers:
+  - name: krishna
+    image: amittest0727.azurecr.io/testing:v1
+    ports:
+    - containerPort: 80
+ imagePullSecrets:
+ - name: amit
+kushagral@Kushagras-MacBook-Air kubernetes_0802 % cat b.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: abc123
+ labels:
+  app: nginx
+spec:
+ replicas: 3
+ selector:
+  matchLabels:
+   app: nginx
+ template:
+  metadata:
+   labels:
+    app: nginx
+  spec:
+   containers:
+    - name: amit
+      image: amittest0727.azurecr.io/testing:v1
+      ports:
+       - containerPort: 80
+   imagePullSecrets:
+   - name: amit
+kushagral@Kushagras-MacBook-Air kubernetes_0802 % cat c.yml 
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+ name: amit-hpa
+spec:
+ scaleTargetRef:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: abc123
+ minReplicas: 2
+ maxReplicas: 6
+ metrics:
+ - type: Resource
+   resource:
+    name: cpu
+    target:
+     type: Utilization
+     averageUtilization: 50
+kushagral@Kushagras-MacBook-Air kubernetes_0802 % cat d.yml 
+apiVersion: v1
+kind: Service
+metadata:
+ name: amit-clusterip
+spec:
+ selector:
+  app: nginx
+ ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+ type: ClusterIP
+kushagral@Kushagras-MacBook-Air kubernetes_0802 % cat e.yml 
+apiVersion: v1
+kind: Service
+metadata:
+ name: amit-clusterip
+spec:
+ selector:
+  app: nginx
+ ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+ type: NodePort
+kushagral@Kushagras-MacBook-Air kubernetes_0802 % cat f.yml 
+apiVersion: v1
+kind: Service
+metadata:
+ name: amit-clusterip
+spec:
+ selector:
+  app: nginx
+ ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+ type: LoadBalancer
